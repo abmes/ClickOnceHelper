@@ -9,8 +9,10 @@ Copy-Item .\Abmes.ClickOnceHelper.nuspec bin
 Copy-Item .\tools .\bin -Recurse
 Copy-Item .\content .\bin -Recurse
 
+$packageVersion = $env:PackageVersion
+
 cd bin
-NuGet pack Abmes.ClickOnceHelper.nuspec
+NuGet pack Abmes.ClickOnceHelper.nuspec -Version $packageVersion
 cd..
 
 if (-not (Test-Path "build"))
