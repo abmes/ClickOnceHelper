@@ -6,7 +6,7 @@
     <authors>Abmes</authors>
     <licenseUrl>https://github.com/abmes/ClickOnceHelper/blob/master/license.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <title>ClickOnce Helper</title>
+    <title>Abmes ClickOnce Helper</title>
     <description>ClickOnce Application helper for building and deployment</description>
     <projectUrl>https://github.com/abmes/ClickOnceHelper</projectUrl>
     <iconUrl>https://en.gravatar.com/userimage/79846298/52cbbcdfa221ce4fea5ebea5928aa1e7.png</iconUrl>
