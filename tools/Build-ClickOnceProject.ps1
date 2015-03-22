@@ -38,7 +38,11 @@ function Build-ClickOnceProject([System.IO.FileInfo] $projectFile)
     Set-Content $assemblyInfoFile.FullName $newAssemblyInfo
 
     Remove-Item "$projectDir\bin\Release" -Force -Recurse
-    msbuild $projectFile.FullName /verbosity:minimal /target:publish
+    
+    $programFiles86 = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
+    $visualStudioVersion = (Get-ChildItem -Path $programFiles86 -Filter "Microsoft Visual Studio*")[-1].Name.Split(' ')[-1]
+    
+    msbuild $projectFile.FullName /verbosity:minimal /target:publish /p:Configuration=Release /p:VisualStudioVersion=$visualStudioVersion
 
     git commit -q -m "=============== BUILD $newAppVersion ===============" $projectFile.FullName $assemblyInfoFile.FullName
     
