@@ -1,3 +1,11 @@
+function Check-FtpCredentials($ftp, $credentials)
+{
+    $request = [System.Net.WebRequest]::Create($ftp)
+    $request.Credentials = $credentials
+    $request.Method = [System.Net.WebRequestMethods+FTP]::PrintWorkingDirectory
+    $response = $request.GetResponse()
+}
+
 function Make-FtpFolder($ftpPath, $credentials)
 {
     $makeDirectory = [System.Net.WebRequest]::Create($ftpPath)
@@ -65,7 +73,16 @@ function TryRename-FtpFolder($ftpPath, $newName, $credentials)
 
 function DoDeploy-ClickOnceProject([string] $sourceDir, [string] $ftp, [string] $ftpAppDir, [string] $user, [string] $pass)
 {
-    $credentials = New-Object System.Net.NetworkCredential($user, $pass)
+    if ([string]::IsNullOrEmpty($user) -or [string]::IsNullOrEmpty($pass))
+    {
+        $credentials = Get-Credential -UserName "$user" -Message "Enter ftp credential"
+    }
+    else
+    {
+        $credentials = New-Object System.Net.NetworkCredential($user, $pass)
+    }
+
+    Check-FtpCredentials $ftp $credentials
 
     Ensure-FtpFolderExists ($ftp + $ftpAppDir) $credentials
 
