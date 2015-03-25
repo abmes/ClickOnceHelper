@@ -37,7 +37,7 @@ function Build-ClickOnceProject([System.IO.FileInfo] $projectFile)
     $newAssemblyInfo = $oldAssemblyInfo.Replace($oldAppVersion, $newAppVersion)
     Set-Content $assemblyInfoFile.FullName $newAssemblyInfo
 
-    Remove-Item "$projectDir\bin\Release" -Force -Recurse
+    if (Test-Path "$projectDir\bin\Release") { Remove-Item "$projectDir\bin\Release" -Force -Recurse }
     
     $programFiles86 = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
     $visualStudioVersion = (Get-ChildItem -Path $programFiles86 -Filter "Microsoft Visual Studio*")[-1].Name.Split(' ')[-1]
