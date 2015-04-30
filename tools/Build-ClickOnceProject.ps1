@@ -25,12 +25,36 @@ function Build-ClickOnceProject([System.IO.FileInfo] $projectFile)
         }
     }
 
-    $xml.Save($projectFile.FullName)
-
-    
     $oldAppVersion = $appVersion.Replace("%2a", ($appRevision-1).ToString())
     $newAppVersion = $appVersion.Replace("%2a", $appRevision.ToString())
 
+    
+    if ($xml.Project.PropertyGroup[0].UpdateEnabled -eq $null)
+    {
+        $child = $xml.CreateElement("UpdateEnabled", $xml.DocumentElement.NamespaceURI)
+        $xml.Project.PropertyGroup[0].AppendChild($child) | Out-Null
+    }
+    
+    if ($xml.Project.PropertyGroup[0].UpdateRequired -eq $null)
+    {
+        $child = $xml.CreateElement("UpdateRequired", $xml.DocumentElement.NamespaceURI)
+        $xml.Project.PropertyGroup[0].AppendChild($child) | Out-Null
+    }
+    
+    if ($xml.Project.PropertyGroup[0].MinimumRequiredVersion -eq $null)
+    {
+        $child = $xml.CreateElement("MinimumRequiredVersion", $xml.DocumentElement.NamespaceURI)
+        $xml.Project.PropertyGroup[0].AppendChild($child) | Out-Null
+    }    
+    
+    $xml.Project.PropertyGroup[0].UpdateEnabled = "true"
+    $xml.Project.PropertyGroup[0].UpdateRequired = "true"
+    $xml.Project.PropertyGroup[0].MinimumRequiredVersion = $newAppVersion
+
+    
+    $xml.Save($projectFile.FullName)
+
+    
     $assemblyInfoFile = Get-ChildItem -Path $projectDir -Recurse -Filter "AssemblyInfo.cs"
     
     $oldAssemblyInfo = Get-Content $assemblyInfoFile.FullName
@@ -44,7 +68,7 @@ function Build-ClickOnceProject([System.IO.FileInfo] $projectFile)
     
     msbuild $projectFile.FullName /verbosity:minimal /target:publish /p:Configuration=Release /p:VisualStudioVersion=$visualStudioVersion
 
-    git commit -q -m "=============== BUILD $newAppVersion ===============" $projectFile.FullName $assemblyInfoFile.FullName
+    #git commit -q -m "=============== BUILD $newAppVersion ===============" $projectFile.FullName $assemblyInfoFile.FullName
     
     echo ""
     echo "Build done."
